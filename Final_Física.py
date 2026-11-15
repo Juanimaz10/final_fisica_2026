@@ -42,7 +42,6 @@ class SistemaColision:
 
 
 def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, pasos, dt, titulo):
-    # Inicialización de partículas y sistema
     particula_1 = Particula(m=m1, r=r1, r0=[x1, y1], v0=[vx1, vy1])
     particula_2 = Particula(m=m2, r=r2, r0=[x2, y2], v0=[vx2, vy2])
     sistema = SistemaColision(particula_1, particula_2, e=e) 
@@ -70,7 +69,7 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
     print(f"Momento Lineal Total Inicial: {P_inicial} | Final: {P_final}")
     print(f"Energía Cinética Total Inicial: {E_inicial:.2f} J | Final: {E_final:.2f} J")
 
-    # Configuración de la animación
+    
     fig, ax = plt.subplots(figsize=(6, 6))
     ax.set_xlim(-10, 10)
     ax.set_ylim(-10, 10)
@@ -92,8 +91,6 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
     ani = animation.FuncAnimation(fig, animar, frames=pasos, interval=20, blit=False)
     plt.show()
 
-
-# --- BUCLE PRINCIPAL DEL MENÚ (WHILE TRUE) ---
 while True:
     print("\n" + "="*50)
     print("             MENÚ PRINCIPAL - COLISIÓN 2D              ")
@@ -119,7 +116,6 @@ while True:
         print("="*50)
         print("Presiona ENTER sin escribir nada para conservar el valor entre corchetes [].\n")
         try:
-            # Partícula 1
             print("--- Partícula 1 ---")
             m1 = float(input("Masa [2.0]: ") or 2.0)
             r1 = float(input("Radio [0.5]: ") or 0.5)
@@ -128,7 +124,7 @@ while True:
             vx1 = float(input("Velocidad X inicial [3.0]: ") or 3.0)
             vy1 = float(input("Velocidad Y inicial [-0.5]: ") or -0.5)
 
-            # Partícula 2
+            
             print("\n--- Partícula 2 ---")
             m2 = float(input("Masa [3.0]: ") or 3.0)
             r2 = float(input("Radio [0.5]: ") or 0.5)
@@ -137,7 +133,6 @@ while True:
             vx2 = float(input("Velocidad X inicial [-2.0]: ") or -2.0)
             vy2 = float(input("Velocidad Y inicial [0.5]: ") or 0.5)
 
-            # Parámetros generales
             print("\n--- Parámetros Generales ---")
             e = float(input("Coeficiente de restitución 'e' (0 a 1) [1.0]: ") or 1.0)
             pasos = int(input("Número de pasos de simulación [200]: ") or 200)
