@@ -40,14 +40,16 @@ class SistemaColision:
         self.p2.pos += self.p2.vel * dt
         self.colision()
 
-
-def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, pasos, dt, titulo):
+# Agregamos el parámetro "mostrar_datos_en_pantalla"
+def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, pasos, dt, titulo, mostrar_datos_en_pantalla=False):
     particula_1 = Particula(m=m1, r=r1, r0=[x1, y1], v0=[vx1, vy1])
     particula_2 = Particula(m=m2, r=r2, r0=[x2, y2], v0=[vx2, vy2])
     sistema = SistemaColision(particula_1, particula_2, e=e) 
 
     historial_p1 = []
     historial_p2 = []
+    historial_v1 = [] # Nuevo: historial de velocidades P1
+    historial_v2 = [] # Nuevo: historial de velocidades P2
 
     P_inicial = particula_1.momento_lineal() + particula_2.momento_lineal()
     E_inicial = particula_1.energia_cinetica() + particula_2.energia_cinetica()
@@ -55,10 +57,14 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
     for _ in range(pasos):
         historial_p1.append(particula_1.pos.copy())
         historial_p2.append(particula_2.pos.copy())
+        historial_v1.append(particula_1.vel.copy())
+        historial_v2.append(particula_2.vel.copy())
         sistema.paso_euler(dt)
 
     historial_p1 = np.array(historial_p1)
     historial_p2 = np.array(historial_p2)
+    historial_v1 = np.array(historial_v1)
+    historial_v2 = np.array(historial_v2)
 
     P_final = particula_1.momento_lineal() + particula_2.momento_lineal()
     E_final = particula_1.energia_cinetica() + particula_2.energia_cinetica()
@@ -69,8 +75,7 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
     print(f"Momento Lineal Total Inicial: {P_inicial} | Final: {P_final}")
     print(f"Energía Cinética Total Inicial: {E_inicial:.2f} J | Final: {E_final:.2f} J")
 
-    
-    fig, ax = plt.subplots(figsize=(6, 6))
+    fig, ax = plt.subplots(figsize=(8, 8)) # Ampliamos un poco la figura para que entre el texto
     ax.set_xlim(-10, 10)
     ax.set_ylim(-10, 10)
     ax.set_aspect('equal')
@@ -81,11 +86,25 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
     cuerpo2 = plt.Circle(historial_p2[0], particula_2.r, color='red', label='P2')
     ax.add_patch(cuerpo1)
     ax.add_patch(cuerpo2)
-    ax.legend()
+    ax.legend(loc="upper right")
+
+    # Creamos un cuadro de texto vacío en la gráfica
+    texto_info = ax.text(0.02, 0.98, '', transform=ax.transAxes, verticalalignment='top', 
+                         bbox=dict(boxstyle='round', facecolor='white', alpha=0.8), fontsize=9)
 
     def animar(i):
         cuerpo1.set_center(historial_p1[i])
         cuerpo2.set_center(historial_p2[i])
+        
+        # Si la opción está activa, actualizamos el texto en cada paso
+        if mostrar_datos_en_pantalla:
+            tiempo_actual = i * dt
+            info = f"Tiempo: {tiempo_actual:.2f} s\n"
+            info += f"P1 - Pos: ({historial_p1[i][0]:.1f}, {historial_p1[i][1]:.1f}) | Vel: ({historial_v1[i][0]:.1f}, {historial_v1[i][1]:.1f})\n"
+            info += f"P2 - Pos: ({historial_p2[i][0]:.1f}, {historial_p2[i][1]:.1f}) | Vel: ({historial_v2[i][0]:.1f}, {historial_v2[i][1]:.1f})"
+            texto_info.set_text(info)
+            return cuerpo1, cuerpo2, texto_info
+            
         return cuerpo1, cuerpo2
 
     ani = animation.FuncAnimation(fig, animar, frames=pasos, interval=20, blit=False)
@@ -95,7 +114,7 @@ while True:
     print("\n" + "="*50)
     print("             MENÚ PRINCIPAL - COLISIÓN 2D              ")
     print("="*50)
-    print("1. Ejecutar simulación con valores por defecto")
+    print("1. Ejecutar simulación con valores por defecto (Ver datos en tiempo real)")
     print("2. Modificar variables por consola y ejecutar simulación")
     print("3. Salir / Cortar la simulación")
     
@@ -107,10 +126,12 @@ while True:
             m1=2.0, r1=0.5, x1=-5.0, y1=1.0, vx1=3.0, vy1=-0.5,
             m2=3.0, r2=0.5, x2=5.0, y2=-0.5, vx2=-2.0, vy2=0.5,
             e=1.0, pasos=200, dt=0.02,
-            titulo="Simulación de Colisión 2D (Por Defecto)"
+            titulo="Simulación de Colisión 2D (Por Defecto)",
+            mostrar_datos_en_pantalla=True  # Activamos los datos para la opción 1
         )
 
     elif opcion == '2':
+        # (El resto del código de la Opción 2 se mantiene idéntico)
         print("\n" + "="*50)
         print("         MODIFICACIÓN DE VARIABLES POR CONSOLA         ")
         print("="*50)
@@ -124,7 +145,6 @@ while True:
             vx1 = float(input("Velocidad X inicial [3.0]: ") or 3.0)
             vy1 = float(input("Velocidad Y inicial [-0.5]: ") or -0.5)
 
-            
             print("\n--- Partícula 2 ---")
             m2 = float(input("Masa [3.0]: ") or 3.0)
             r2 = float(input("Radio [0.5]: ") or 0.5)
@@ -146,7 +166,8 @@ while True:
             m1, r1, x1, y1, vx1, vy1,
             m2, r2, x2, y2, vx2, vy2,
             e, pasos, dt,
-            titulo="Simulación de Colisión 2D (Personalizada)"
+            titulo="Simulación de Colisión 2D (Personalizada)",
+            mostrar_datos_en_pantalla=False # Se puede cambiar a True si también quieres verlos aquí
         )
 
     elif opcion == '3':
