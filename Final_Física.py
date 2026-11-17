@@ -173,7 +173,6 @@ while True:
 
         print("\n--- Partícula 2 ---")
         m2 = pedir_valor("Masa", 3.0, 0.1, 50.0)
-        # Cálculo automático del radio para la partícula 2
         r2 = float(np.sqrt(m2) * 0.353)
         print(f"  [>] Radio calculado automáticamente: {r2:.2f} m")
         
