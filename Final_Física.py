@@ -40,7 +40,6 @@ class SistemaColision:
         self.p2.pos += self.p2.vel * dt
         self.colision()
 
-# Agregamos el parámetro "mostrar_datos_en_pantalla"
 def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, pasos, dt, titulo, mostrar_datos_en_pantalla=False):
     particula_1 = Particula(m=m1, r=r1, r0=[x1, y1], v0=[vx1, vy1])
     particula_2 = Particula(m=m2, r=r2, r0=[x2, y2], v0=[vx2, vy2])
@@ -48,8 +47,8 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
 
     historial_p1 = []
     historial_p2 = []
-    historial_v1 = [] # Nuevo: historial de velocidades P1
-    historial_v2 = [] # Nuevo: historial de velocidades P2
+    historial_v1 = [] 
+    historial_v2 = [] 
 
     P_inicial = particula_1.momento_lineal() + particula_2.momento_lineal()
     E_inicial = particula_1.energia_cinetica() + particula_2.energia_cinetica()
@@ -75,7 +74,7 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
     print(f"Momento Lineal Total Inicial: {P_inicial} | Final: {P_final}")
     print(f"Energía Cinética Total Inicial: {E_inicial:.2f} J | Final: {E_final:.2f} J")
 
-    fig, ax = plt.subplots(figsize=(8, 8)) # Ampliamos un poco la figura para que entre el texto
+    fig, ax = plt.subplots(figsize=(8, 8)) 
     ax.set_xlim(-10, 10)
     ax.set_ylim(-10, 10)
     ax.set_aspect('equal')
@@ -88,7 +87,6 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
     ax.add_patch(cuerpo2)
     ax.legend(loc="upper right")
 
-    # Creamos un cuadro de texto vacío en la gráfica
     texto_info = ax.text(0.02, 0.98, '', transform=ax.transAxes, verticalalignment='top', 
                          bbox=dict(boxstyle='round', facecolor='white', alpha=0.8), fontsize=9)
 
@@ -96,7 +94,6 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
         cuerpo1.set_center(historial_p1[i])
         cuerpo2.set_center(historial_p2[i])
         
-        # Si la opción está activa, actualizamos el texto en cada paso
         if mostrar_datos_en_pantalla:
             tiempo_actual = i * dt
             info = f"Tiempo: {tiempo_actual:.2f} s\n"
@@ -110,69 +107,135 @@ def ejecutar_simulacion(m1, r1, x1, y1, vx1, vy1, m2, r2, x2, y2, vx2, vy2, e, p
     ani = animation.FuncAnimation(fig, animar, frames=pasos, interval=20, blit=False)
     plt.show()
 
+def pedir_valor(mensaje, por_defecto, min_val, max_val, tipo=float):
+    prompt = f"{mensaje} ({min_val} a {max_val}): "
+    while True:
+        entrada = input(prompt).strip()
+        if not entrada:
+            return por_defecto
+        try:
+            valor = tipo(entrada)
+            if min_val <= valor <= max_val:
+                return valor
+            else:
+                print(f"  [Error] El valor debe estar entre {min_val} y {max_val}.")
+        except ValueError:
+            print("  [Error] Por favor ingresa un número válido.")
+
+
+registro_simulaciones = []  
+
 while True:
     print("\n" + "="*50)
     print("             MENÚ PRINCIPAL - COLISIÓN 2D              ")
     print("="*50)
-    print("1. Ejecutar simulación con valores por defecto (Ver datos en tiempo real)")
+    print("1. Ejecutar simulación con valores por defecto (Ver datos)")
     print("2. Modificar variables por consola y ejecutar simulación")
-    print("3. Salir / Cortar la simulación")
+    print("3. Mostrar fórmulas físicas utilizadas")
+    print("4. Mostrar historial de simulaciones realizadas en esta sesión")
+    print("5. Salir / Cortar la simulación")
     
-    opcion = input("Selecciona una opción (1, 2 o 3): ").strip()
+    opcion = input("Selecciona una opción (1 al 5): ").strip()
 
     if opcion == '1':
         print("\nEjecutando simulación con valores por defecto...")
+        
+        registro_simulaciones.append({
+            "Tipo": "Por Defecto",
+            "P1": {"m": 2.0, "r": 0.5, "Pos Inicial": (-5.0, 1.0), "Vel Inicial": (3.0, -0.5)},
+            "P2": {"m": 3.0, "r": 0.5, "Pos Inicial": (5.0, -0.5), "Vel Inicial": (-2.0, 0.5)},
+            "Sistema": {"e": 1.0, "Pasos": 200, "dt": 0.02}
+        })
+
         ejecutar_simulacion(
             m1=2.0, r1=0.5, x1=-5.0, y1=1.0, vx1=3.0, vy1=-0.5,
             m2=3.0, r2=0.5, x2=5.0, y2=-0.5, vx2=-2.0, vy2=0.5,
             e=1.0, pasos=200, dt=0.02,
             titulo="Simulación de Colisión 2D (Por Defecto)",
-            mostrar_datos_en_pantalla=True  # Activamos los datos para la opción 1
+            mostrar_datos_en_pantalla=True
         )
 
     elif opcion == '2':
-        # (El resto del código de la Opción 2 se mantiene idéntico)
         print("\n" + "="*50)
         print("         MODIFICACIÓN DE VARIABLES POR CONSOLA         ")
         print("="*50)
-        print("Presiona ENTER sin escribir nada para conservar el valor entre corchetes [].\n")
-        try:
-            print("--- Partícula 1 ---")
-            m1 = float(input("Masa [2.0]: ") or 2.0)
-            r1 = float(input("Radio [0.5]: ") or 0.5)
-            x1 = float(input("Posición X inicial [-5.0]: ") or -5.0)
-            y1 = float(input("Posición Y inicial [1.0]: ") or 1.0)
-            vx1 = float(input("Velocidad X inicial [3.0]: ") or 3.0)
-            vy1 = float(input("Velocidad Y inicial [-0.5]: ") or -0.5)
+        print("Presiona ENTER sin escribir nada para utilizar el valor por defecto.\n")
+        
+        print("--- Partícula 1 ---")
+        m1 = pedir_valor("Masa", 2.0, 0.1, 50.0)
+        r1 = pedir_valor("Radio", 0.5, 0.1, 4.0)
+        x1 = pedir_valor("Posición X inicial", -5.0, -9.0, 9.0)
+        y1 = pedir_valor("Posición Y inicial", 1.0, -9.0, 9.0)
+        vx1 = pedir_valor("Velocidad X inicial", 3.0, -15.0, 15.0)
+        vy1 = pedir_valor("Velocidad Y inicial", -0.5, -15.0, 15.0)
 
-            print("\n--- Partícula 2 ---")
-            m2 = float(input("Masa [3.0]: ") or 3.0)
-            r2 = float(input("Radio [0.5]: ") or 0.5)
-            x2 = float(input("Posición X inicial [5.0]: ") or 5.0)
-            y2 = float(input("Posición Y inicial [-0.5]: ") or -0.5)
-            vx2 = float(input("Velocidad X inicial [-2.0]: ") or -2.0)
-            vy2 = float(input("Velocidad Y inicial [0.5]: ") or 0.5)
+        print("\n--- Partícula 2 ---")
+        m2 = pedir_valor("Masa", 3.0, 0.1, 50.0)
+        r2 = pedir_valor("Radio", 0.5, 0.1, 4.0)
+        x2 = pedir_valor("Posición X inicial", 5.0, -9.0, 9.0)
+        y2 = pedir_valor("Posición Y inicial", -0.5, -9.0, 9.0)
+        vx2 = pedir_valor("Velocidad X inicial", -2.0, -15.0, 15.0)
+        vy2 = pedir_valor("Velocidad Y inicial", 0.5, -15.0, 15.0)
 
-            print("\n--- Parámetros Generales ---")
-            e = float(input("Coeficiente de restitución 'e' (0 a 1) [1.0]: ") or 1.0)
-            pasos = int(input("Número de pasos de simulación [200]: ") or 200)
-            dt = float(input("Paso de tiempo dt [0.02]: ") or 0.02)
+        print("\n--- Parámetros Generales ---")
+        e = pedir_valor("Coeficiente de restitución 'e'", 1.0, 0.0, 1.0)
+        pasos = pedir_valor("Número de pasos de simulación", 200, 50, 1000, tipo=int)
+        dt = pedir_valor("Paso de tiempo dt", 0.02, 0.001, 0.5)
 
-        except ValueError:
-            print("\n[Aviso] Se detectó un valor inválido. Se regresará al menú principal.")
-            continue
+        registro_simulaciones.append({
+            "Tipo": "Personalizada",
+            "P1": {"m": m1, "r": r1, "Pos Inicial": (x1, y1), "Vel Inicial": (vx1, vy1)},
+            "P2": {"m": m2, "r": r2, "Pos Inicial": (x2, y2), "Vel Inicial": (vx2, vy2)},
+            "Sistema": {"e": e, "Pasos": pasos, "dt": dt}
+        })
 
         ejecutar_simulacion(
             m1, r1, x1, y1, vx1, vy1,
             m2, r2, x2, y2, vx2, vy2,
             e, pasos, dt,
             titulo="Simulación de Colisión 2D (Personalizada)",
-            mostrar_datos_en_pantalla=False # Se puede cambiar a True si también quieres verlos aquí
+            mostrar_datos_en_pantalla=True
         )
 
-    elif opcion == '3':
-        print("\nSaliendo de la simulación. ¡Hasta luego!")
-        break
+    elif opcion == '3 ':
+        print("\n" + "="*50)
+        print("               FÓRMULAS FÍSICAS UTILIZADAS               ")
+        print("="*50)
+        print("1. Energía Cinética (Translacional):")
+        print("   Ec = 0.5 * m * ||v||^2")
+        print("\n2. Momento Lineal:")
+        print("   P = m * v")
+        print("\n3. Cinemática - Integración de Euler:")
+        print("   Pos_nueva = Pos_actual + v * dt")
+        print("\n4. Resolución de Colisión (Impulso J):")
+        print("   Distancia 'd' = ||Pos1 - Pos2||")
+        print("   Si d <= (R1 + R2) y se acercan (v_rel * n < 0):")
+        print("     Vector Normal 'n' = (Pos1 - Pos2) / d")
+        print("     Impulso 'J' = -(1 + e) * (v_rel * n) / (1/m1 + 1/m2)")
+        print("     v1_nueva = v1 + (J / m1) * n")
+        print("     v2_nueva = v2 - (J / m2) * n")
+        print("="*50)
+
+    elif opcion == '4':
+        print("\n" + "="*50)
+        print("            HISTORIAL DE DATOS DE LA SESIÓN            ")
+        print("="*50)
+        if len(registro_simulaciones) == 0:
+            print("Aún no se ha ejecutado ninguna simulación en esta sesión.")
+        else:
+            for idx, sim in enumerate(registro_simulaciones, 1):
+                print(f"--- Simulación #{idx} ({sim['Tipo']}) ---")
+                print(f"P1: Masa={sim['P1']['m']}, Radio={sim['P1']['r']}, "
+                      f"Pos0={sim['P1']['Pos Inicial']}, Vel0={sim['P1']['Vel Inicial']}")
+                print(f"P2: Masa={sim['P2']['m']}, Radio={sim['P2']['r']}, "
+                      f"Pos0={sim['P2']['Pos Inicial']}, Vel0={sim['P2']['Vel Inicial']}")
+                print(f"Sistema: Coef Restit (e)={sim['Sistema']['e']}, "
+                      f"Pasos={sim['Sistema']['Pasos']}, dt={sim['Sistema']['dt']}\n")
+        print("="*50)
+
+    elif opcion == '5':
+                print("\nSaliendo de la simulación. ¡Hasta luego!")
+                break
 
     else:
-        print("\n[Aviso] Opción no válida. Por favor, ingresa 1, 2 o 3.")
+        print("\n[Aviso] Opción no válida. Por favor, ingresa un número del 1 al 5.")
