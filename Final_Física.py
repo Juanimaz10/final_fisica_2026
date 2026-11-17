@@ -163,7 +163,6 @@ while True:
         
         print("--- Partícula 1 ---")
         m1 = pedir_valor("Masa", 2.0, 0.1, 50.0)
-        # Cálculo automático del radio asumiendo densidad uniforme en 2D (r proporcional a la raíz de la masa)
         r1 = float(np.sqrt(m1) * 0.353) 
         print(f"  [>] Radio calculado automáticamente: {r1:.2f} m")
         
