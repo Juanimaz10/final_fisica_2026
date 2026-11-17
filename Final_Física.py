@@ -163,7 +163,10 @@ while True:
         
         print("--- Partícula 1 ---")
         m1 = pedir_valor("Masa", 2.0, 0.1, 50.0)
-        r1 = pedir_valor("Radio", 0.5, 0.1, 4.0)
+        # Cálculo automático del radio asumiendo densidad uniforme en 2D (r proporcional a la raíz de la masa)
+        r1 = float(np.sqrt(m1) * 0.353) 
+        print(f"  [>] Radio calculado automáticamente: {r1:.2f} m")
+        
         x1 = pedir_valor("Posición X inicial", -5.0, -9.0, 9.0)
         y1 = pedir_valor("Posición Y inicial", 1.0, -9.0, 9.0)
         vx1 = pedir_valor("Velocidad X inicial", 3.0, -15.0, 15.0)
@@ -171,7 +174,10 @@ while True:
 
         print("\n--- Partícula 2 ---")
         m2 = pedir_valor("Masa", 3.0, 0.1, 50.0)
-        r2 = pedir_valor("Radio", 0.5, 0.1, 4.0)
+        # Cálculo automático del radio para la partícula 2
+        r2 = float(np.sqrt(m2) * 0.353)
+        print(f"  [>] Radio calculado automáticamente: {r2:.2f} m")
+        
         x2 = pedir_valor("Posición X inicial", 5.0, -9.0, 9.0)
         y2 = pedir_valor("Posición Y inicial", -0.5, -9.0, 9.0)
         vx2 = pedir_valor("Velocidad X inicial", -2.0, -15.0, 15.0)
@@ -197,24 +203,48 @@ while True:
             mostrar_datos_en_pantalla=True
         )
 
-    elif opcion == '3 ':
-        print("\n" + "="*50)
-        print("               FÓRMULAS FÍSICAS UTILIZADAS               ")
-        print("="*50)
+    elif opcion == '3':
+        print("\n" + "="*70)
+        print("           FÓRMULAS FÍSICAS UTILIZADAS Y SUS UNIDADES           ")
+        print("="*70)
+        
         print("1. Energía Cinética (Translacional):")
-        print("   Ec = 0.5 * m * ||v||^2")
+        print("   Fórmula:   Ec = 0.5 * m * ||v||^2")
+        print("   Variables: m = Masa [kg], v = Velocidad [m/s]")
+        print("   Resultado: Ec = Energía [Joules (J) o kg·m²/s²]")
+        
         print("\n2. Momento Lineal:")
-        print("   P = m * v")
+        print("   Fórmula:   P = m * v")
+        print("   Variables: m = Masa [kg], v = Velocidad [m/s]")
+        print("   Resultado: P = Momento Lineal [kg·m/s]")
+        
         print("\n3. Cinemática - Integración de Euler:")
-        print("   Pos_nueva = Pos_actual + v * dt")
+        print("   Fórmula:   Pos_nueva = Pos_actual + v * dt")
+        print("   Variables: Pos = Posición [m], v = Velocidad [m/s], dt = Paso de tiempo [s]")
+        print("   Resultado: Pos_nueva = Posición actualizada [m]")
+        
         print("\n4. Resolución de Colisión (Impulso J):")
-        print("   Distancia 'd' = ||Pos1 - Pos2||")
-        print("   Si d <= (R1 + R2) y se acercan (v_rel * n < 0):")
-        print("     Vector Normal 'n' = (Pos1 - Pos2) / d")
-        print("     Impulso 'J' = -(1 + e) * (v_rel * n) / (1/m1 + 1/m2)")
-        print("     v1_nueva = v1 + (J / m1) * n")
-        print("     v2_nueva = v2 - (J / m2) * n")
-        print("="*50)
+        print("   - Distancia entre centros:")
+        print("     Fórmula:   d = ||Pos1 - Pos2||")
+        print("     Variables: Pos1, Pos2 = Posiciones [m]")
+        print("     Resultado: d = Distancia [m]")
+        
+        print("\n   - Vector Normal (dirección del choque):")
+        print("     Fórmula:   n = (Pos1 - Pos2) / d")
+        print("     Resultado: n = Vector direccional unitario [Adimensional]")
+        
+        print("\n   - Magnitud del Impulso:")
+        print("     Fórmula:   J = -(1 + e) * (v_rel * n) / (1/m1 + 1/m2)")
+        print("     Variables: e = Coef. de restitución [Adimensional], v_rel = Vel. relativa [m/s]")
+        print("                m1, m2 = Masas [kg]")
+        print("     Resultado: J = Impulso [N·s o kg·m/s]")
+        
+        print("\n   - Nuevas Velocidades tras el choque:")
+        print("     Fórmula:   v1_nueva = v1 + (J / m1) * n")
+        print("                v2_nueva = v2 - (J / m2) * n")
+        print("     Variables: J = Impulso [kg·m/s], m = Masa [kg], n = Vector [Adim.]")
+        print("     Resultado: v_nueva = Velocidad actualizada [m/s]")
+        print("="*70)
 
     elif opcion == '4':
         print("\n" + "="*50)
